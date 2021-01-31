@@ -20,6 +20,8 @@ type
 
     class function bytetoMemoryStream(value: tbytes): tmemoryStream; overload;
 
+    class function gmttoDateTime(const value: string): tdatetime;
+
     class function firstDOM(const value: tdate): tdatetime;
     class function firstDOW(const value: tdate): tdatetime;
     class function firstDOY(const value: tdate): tdatetime;
@@ -246,6 +248,38 @@ begin
     decodeDate(value, lwdYear, lwdMonth, lwdDay);
 
   result := (strtoDate(inttoStr(1) + '/' + inttoStr(1) + '/' + inttoStr(lwdYear)));
+end;
+
+class function tkitU.gmttoDateTime(const value: string): tdatetime;
+var
+  lstrValue: string;
+begin
+  result := 0;
+
+  if value.trim = '' then
+    exit;
+
+  lstrValue := value;
+  lstrValue := stringreplace(lstrValue, ' GMT', '', [rfReplaceAll]);
+  lstrValue := stringreplace(lstrValue, 'GMT', '', [rfReplaceAll]);
+
+  for var intCount := Low(cDaysOfWeekEn) to High(cDaysOfWeekEn) do
+  begin
+    lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount] + ', ', '', [rfReplaceAll]);
+    lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount] + ' ', '', [rfReplaceAll]);
+    lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount], '', [rfReplaceAll]);
+  end;
+
+  for var intCount := Low(cMonthsOfYearEn) to High(cMonthsOfYearEn) do
+  begin
+    lstrValue := stringreplace(lstrValue, ' ' + cMonthsOfYearEn[intCount] + ' ', '/' + intCount.ToString + '/', [rfReplaceAll]);
+    lstrValue := stringreplace(lstrValue, cMonthsOfYearEn[intCount], '/' + intCount.ToString + '/', [rfReplaceAll]);
+  end;
+
+  try
+    result := strtodatetime(lstrValue);
+  except
+  end;
 end;
 
 class function tkitU.strtoMemoryStream(value: string): tmemoryStream;
