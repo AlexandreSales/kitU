@@ -32,12 +32,10 @@ type
     class function isMail(const value: string): boolean;
     class function isCelPhone(const value: string): boolean;
     class function isCodPhone(const value: string): boolean;
-    class function isCredtCard(const value: string): integer;
 
     class function lastDOM(const value: tdate): tdateTime;
     class function lastDOW(const value: tdate): tdateTime;
     class function lastDOY(const value: tdate): tdateTime;
-
 
     class function memoryStreamToBase64(const value: tmemorystream): string;
     class function notCharacter(const value: string; ext: boolean): string;
@@ -48,7 +46,7 @@ type
 
     class function strtoChars(const value: string; chars: string = '0123456789'): string;
     class function strtoFloat(const value: string): single;
-    class function strtoInt(const value: string): integer;
+    class function strToInteger(const value: string): integer;
     class function strtoStrNumber(const value: string): string;
     class function strtoMemoryStream(value: string): tmemoryStream; overload;
 
@@ -58,7 +56,6 @@ type
       class function ssc(strString, strKey: String): String;
       class function ssd(strString, strKey: String): String;
     {$endif}
-
 
     class function textFormat(const value: String; tipo: tformatType; IeUF: String = ''): string;
     class function timeintervalToStr(interval: Int64): String;
@@ -253,8 +250,6 @@ begin
   result := (strtoDate(inttoStr(1) + '/' + inttoStr(1) + '/' + inttoStr(lwdYear)));
 end;
 
-
-
 class function tkitU.gmttoDateTime(const value: string): tdatetime;
 var
   lstrValue: string;
@@ -351,7 +346,7 @@ begin
   11: lintpostCheck := 4;
   end;
 
-  result := (lintpostCheck > 0) and (self.strtoInt(lstrfoneCheck[lintpostCheck]) in [6..9]);
+  result := (lintpostCheck > 0) and (self.strtoInteger(lstrfoneCheck[lintpostCheck]) in [6..9]);
 end;
 
 class function tkitU.isCodPhone(const value: string): boolean;
@@ -663,7 +658,7 @@ begin
     if offSet > lslValue.count - 1 then
       result := 0
     else
-      result := tkitU.strToInt(lslValue[offSet]);
+      result := tkitU.strToInteger(lslValue[offSet]);
   finally
     if lslValue <> nil then
       freeandnil(lslValue);
@@ -791,12 +786,12 @@ begin
     result := 0
   else
     if lbooNegative then
-      result := - system.sysutils.strtoFloat(lstrResult)
+      result := -strtoFloat(lstrResult)
     else
-      result := system.sysutils.strToFloat(lstrResult);
+      result := strToFloat(lstrResult);
 end;
 
-class function tkitU.strToInt(const value: string): integer;
+class function tkitU.strToInteger(const value: string): integer;
 
   function idInteger(value: string): boolean;
   var
@@ -857,7 +852,7 @@ begin
   else
   begin
     if Trim(lstrResult) <> '' then
-      result := system.sysutils.strToInt(lstrResult)
+      result := strToInt(lstrResult)
     else
       result := 0;
   end;
@@ -973,181 +968,6 @@ begin
   try
     try
       case Tipo of
-        tcep:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-              if Length(lstrResult)= 3 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,1)  else
-              if Length(lstrResult)= 4 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,2)  else
-              if Length(lstrResult)= 5 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3)  else
-              if Length(lstrResult)= 6 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '-' + copy(lstrResult,6,1) else
-              if Length(lstrResult)= 7 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '-' + copy(lstrResult,6,2) else
-              if Length(lstrResult)= 8 then
-                    Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '-' + copy(lstrResult,6,3) else
-              Result := lstrResult;
-          except
-            result := '';
-          end;
-        end;
-        tphone:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-              if Length(lstrResult)= 1 then
-                Result := '(' + copy(lstrResult,1,1) else
-              if Length(lstrResult)= 2 then
-                Result := '(' + copy(lstrResult,1,2) else
-              if Length(lstrResult)= 3 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,1) else
-              if Length(lstrResult)= 4 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,2) else
-              if Length(lstrResult)= 5 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,3) else
-              if Length(lstrResult)= 6 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,4) else
-              if Length(lstrResult)= 7 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,5) else
-              if Length(lstrResult)= 8 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,5) + '-' + copy(lstrResult,8,1)  else
-              if Length(lstrResult)= 9 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,5) + '-' + copy(lstrResult,8,2)  else
-              if Length(lstrResult)= 10 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,5) + '-' + copy(lstrResult,8,3)  else
-              if Length(lstrResult)= 11 then
-                Result := '(' + copy(lstrResult,1,2) + ') ' + copy(lstrResult,3,5) + '-' + copy(lstrResult,8,4)  else
-              Result := lstrResult;
-          except
-          result := '';
-          end;
-        end;
-        tCpf:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-            if Length(lstrResult)= 4 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,1) else
-            if Length(lstrResult)= 5 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,2) else
-            if Length(lstrResult)= 6 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) else
-            if Length(lstrResult)= 7 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,1) else
-            if Length(lstrResult)= 8 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,2) else
-            if Length(lstrResult)= 9 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,3) else
-            if Length(lstrResult)= 10 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,3) + '-' + copy(lstrResult,10,1) else
-            if Length(lstrResult)= 11 then
-                Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,3) + '-' + copy(lstrResult,10,2) else
-
-            Result := lstrResult;
-          except
-            result := '';
-          end;
-        end;
-        tCnpj:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-              if Length(lstrResult)= 4 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,2) else
-              if Length(lstrResult)= 5 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) else
-              if Length(lstrResult)= 6 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,1) else
-              if Length(lstrResult)= 7 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,2) else
-              if Length(lstrResult)= 8 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) else
-              if Length(lstrResult)= 9 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,1) else
-              if Length(lstrResult)= 10 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,2) else
-              if Length(lstrResult)= 11 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,3) else
-              if Length(lstrResult)= 12 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,4) else
-              if Length(lstrResult)= 13 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,4) + '.' + copy(lstrResult,13,1) else
-              if Length(lstrResult)= 14 then
-                Result := copy(lstrResult,1,2) + '.' + copy(lstrResult,3,3) + '.' + copy(lstrResult,6,3) + '/' + copy(lstrResult,9,4) + '-' + copy(lstrResult,13,2) else
-              Result := lstrResult;
-          except
-            result := '';
-          end;
-        end;
-        tvalidateCredcard:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-            if Length(lstrResult)= 3 then
-              Result := copy(lstrResult,1,2) + '/' + copy(lstrResult,3,1) else
-            if Length(lstrResult)= 4 then
-              Result := copy(lstrResult,1,2) + '/' + copy(lstrResult,3,1) + '' + copy(lstrResult,4,1)  else
-            Result := lstrResult;
-          except
-            result := '';
-          end;
-        end;
-        tCredCard:
-        begin
-          try
-            lstrResult := '';
-            for lintCount := Low(value) to High(value) do
-              if isInArray(value, lintCount, cCharInteger) then
-                lstrResult := lstrResult + value[lintCount];
-
-            if Length(lstrResult)= 5 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,1) else
-            if Length(lstrResult)= 6 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,2) else
-            if Length(lstrResult)= 7 then
-              Result := copy(lstrResult,1,4) + '' + copy(lstrResult,5,3) else
-            if Length(lstrResult)= 8 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) else
-            if Length(lstrResult)= 9 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,1) else
-            if Length(lstrResult)= 10 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,2) else
-            if Length(lstrResult)= 11 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,3) else
-            if Length(lstrResult)= 12 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,4) else
-            if Length(lstrResult)= 13 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,4) + ' ' + copy(lstrResult,13,1) else
-            if Length(lstrResult)= 14 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,4) + ' ' + copy(lstrResult,13,2) else
-            if Length(lstrResult)= 15 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,4) + ' ' + copy(lstrResult,13,3) else
-            if Length(lstrResult)= 16 then
-              Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,4) + ' ' + copy(lstrResult,9,4) + ' ' + copy(lstrResult,13,4) else
-            Result := lstrResult;
-          except
-            result := '';
-          end;
-        end;
-
         tfcep:
         begin
           try
@@ -1207,17 +1027,17 @@ begin
               if isInArray(lstrLoad, lintCount, cCharInteger) then
                 lstrResult := lstrResult + lstrLoad[lintCount];
 
-            //while Length(lstrResult) < 11 do
-              //lstrResult := '0' + lstrResult;
+            while Length(lstrResult) < 11 do
+              lstrResult := '0' + lstrResult;
 
-           if isDoc(lstrResult) then
+            if isDoc(lstrResult) then
             begin
               Result := Copy(lstrResult, 1, 3) + '.' + Copy(lstrResult, 4, 3) + '.' + Copy(lstrResult, 7, 3) + '-' + Copy(lstrResult, 10, 2);
               Exit;
             end;
 
-            //while Length(lstrResult) < 14 do
-              //lstrResult := '0' + lstrResult;
+            while Length(lstrResult) < 14 do
+              lstrResult := '0' + lstrResult;
 
             if isDoc(lstrResult) then
             begin
@@ -1264,15 +1084,15 @@ begin
             LslLoad.CommaText := StringReplace(value, '/', ',', [rfReplaceAll]);
 
             if LslLoad.Count > 0 then
-              LwrdDay := self.strToInt(LslLoad[0])
+              LwrdDay := self.strtoInteger(LslLoad[0])
             else
               LwrdDay := 0;
             if LslLoad.Count > 1 then
-              LwrdMonth := self.strToInt(LslLoad[1])
+              LwrdMonth := self.strtoInteger(LslLoad[1])
             else
               LwrdMonth := 0;
             if LslLoad.Count > 2 then
-              LwrdYear := self.strToInt(LslLoad[2])
+              LwrdYear := self.strtoInteger(LslLoad[2])
             else
               LwrdYear := 0;
             if (LwrdDay = 0) or (LwrdMonth = 0) or (LwrdYear = 0) or (LwrdDay > 31) or (LwrdMonth > 12) or (LwrdYear < 1900) then
@@ -1389,64 +1209,6 @@ begin
       result := stringreplace(result, '}', '', [rfReplaceAll]);
     end;
   end;
-end;
-
-class function tkitU.isCredtCard(const value: string): integer;
-var
-  xCartao: string[21];
-  VetCartao: array[0..21] of Byte absolute xCartao;
-  kCartao: Integer;
-  Cstr: string[21];
-  y, x: Integer;
-begin
-  Cstr := '';
-  FillChar(VetCartao, 22, #0);
-  xCartao := value;
-
-  for x := 1 to 20 do
-  if (VetCartao[x] in [48..57]) then
-    Cstr := Cstr + chr(VetCartao[x]);
-
-  xCartao := '';
-  xCartao := Cstr;
-  kCartao := 0;
-
-  if not odd(Length(xCartao)) then
-    for x := (Length(xCartao) - 1) downto 1 do
-    begin
-      if odd(x) then
-        y := ((VetCartao[x] - 48) * 2)
-      else
-        y := (VetCartao[x] - 48);
-      if (y >= 10) then
-        y := ((y - 10) + 1);
-
-      kCartao := (kCartao + y)
-
-    end
-  else
-  for x := (Length(xCartao) - 1) downto 1 do
-  begin
-    if odd(x) then
-      y := (VetCartao[x] - 48)
-    else
-      y := ((VetCartao[x] - 48) * 2);
-    if (y >= 10) then
-      y := ((y - 10) + 1);
-
-    kCartao := (kCartao + y)
-  end;
-
-  x := (10 - (kCartao mod 10));
-
-  if (x = 10) then
-
-  x := 0;
-
-  if (x = (VetCartao[Length(xCartao)] - 48)) then
-    Result := Ord(Cstr[1]) - Ord('2')
-  else
-    Result := 0
 end;
 
 class function tkitU.writeStrings(value: String; offSet: Integer; newValue: string): string;
