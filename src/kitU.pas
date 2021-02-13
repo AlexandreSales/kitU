@@ -48,7 +48,7 @@ type
 
     class function strtoChars(const value: string; chars: string = '0123456789'): string;
     class function strtoFloat(const value: string): single;
-    class function strtoInt(const value: string): integer;
+    class function strToInteger(const value: string): integer;
     class function strtoStrNumber(const value: string): string;
     class function strtoMemoryStream(value: string): tmemoryStream; overload;
 
@@ -351,7 +351,7 @@ begin
   11: lintpostCheck := 4;
   end;
 
-  result := (lintpostCheck > 0) and (self.strtoInt(lstrfoneCheck[lintpostCheck]) in [6..9]);
+  result := (lintpostCheck > 0) and (self.strToInteger(lstrfoneCheck[lintpostCheck]) in [6..9]);
 end;
 
 class function tkitU.isCodPhone(const value: string): boolean;
@@ -408,15 +408,15 @@ begin
 
       lstrDoc := Copy('0000000000' + lstrDoc, Length('0000000000' + lstrDoc) - 10, 11);
 
-      intn1 := strToInt(lstrDoc[1]);
-      intn2 := strToInt(lstrDoc[2]);
-      intn3 := strToInt(lstrDoc[3]);
-      intn4 := strToInt(lstrDoc[4]);
-      intn5 := strToInt(lstrDoc[5]);
-      intn6 := strToInt(lstrDoc[6]);
-      intn7 := strToInt(lstrDoc[7]);
-      intn8 := strToInt(lstrDoc[8]);
-      intn9 := strToInt(lstrDoc[9]);
+      intn1 := strToInteger(lstrDoc[1]);
+      intn2 := strToInteger(lstrDoc[2]);
+      intn3 := strToInteger(lstrDoc[3]);
+      intn4 := strToInteger(lstrDoc[4]);
+      intn5 := strToInteger(lstrDoc[5]);
+      intn6 := strToInteger(lstrDoc[6]);
+      intn7 := strToInteger(lstrDoc[7]);
+      intn8 := strToInteger(lstrDoc[8]);
+      intn9 := strToInteger(lstrDoc[9]);
 
       intd1 := intn9 * 2 + intn8 * 3 + intn7 * 4 + intn6 * 5 + intn5 * 6 + intn4 * 7 + intn3 * 8 + intn2 * 9 + intn1 * 10;
       intd1 := 11 - (intd1 mod 11);
@@ -446,18 +446,18 @@ begin
 
       lstrDoc := Copy('00000000000000' + lstrDoc, Length('00000000000000' + lstrDoc) - 13, 14);
 
-      intn1 := strToInt(lstrDoc[1]);
-      intn2 := strToInt(lstrDoc[2]);
-      intn3 := strToInt(lstrDoc[3]);
-      intn4 := strToInt(lstrDoc[4]);
-      intn5 := strToInt(lstrDoc[5]);
-      intn6 := strToInt(lstrDoc[6]);
-      intn7 := strToInt(lstrDoc[7]);
-      intn8 := strToInt(lstrDoc[8]);
-      intn9 := strToInt(lstrDoc[9]);
-      intn10 := strToInt(lstrDoc[10]);
-      intn11 := strToInt(lstrDoc[11]);
-      intn12 := strToInt(lstrDoc[12]);
+      intn1 := strToInteger(lstrDoc[1]);
+      intn2 := strToInteger(lstrDoc[2]);
+      intn3 := strToInteger(lstrDoc[3]);
+      intn4 := strToInteger(lstrDoc[4]);
+      intn5 := strToInteger(lstrDoc[5]);
+      intn6 := strToInteger(lstrDoc[6]);
+      intn7 := strToInteger(lstrDoc[7]);
+      intn8 := strToInteger(lstrDoc[8]);
+      intn9 := strToInteger(lstrDoc[9]);
+      intn10 := strToInteger(lstrDoc[10]);
+      intn11 := strToInteger(lstrDoc[11]);
+      intn12 := strToInteger(lstrDoc[12]);
 
       intd1 := intn12 * 2 + intn11 * 3 + intn10 * 4 + intn9 * 5 + intn8 * 6 + intn7 * 7 + intn6 * 8 + intn5 * 9 + intn4 * 2 + intn3 * 3 + intn2 * 4 + intn1 * 5;
       intd1 := 11 - (intd1 mod 11);
@@ -663,7 +663,7 @@ begin
     if offSet > lslValue.count - 1 then
       result := 0
     else
-      result := tkitU.strToInt(lslValue[offSet]);
+      result := tkitU.strToInteger(lslValue[offSet]);
   finally
     if lslValue <> nil then
       freeandnil(lslValue);
@@ -796,7 +796,7 @@ begin
       result := system.sysutils.strToFloat(lstrResult);
 end;
 
-class function tkitU.strToInt(const value: string): integer;
+class function tkitU.strToInteger(const value: string): integer;
 
   function idInteger(value: string): boolean;
   var
@@ -823,7 +823,7 @@ class function tkitU.strToInt(const value: string): integer;
         limp2 := 83647;
 
       lstrTemp := copy(lstrTemp, 1, 10);
-      if (strToInt(copy(lstrTemp, 1, 5)) > limp1) or ((strToInt(copy(lstrTemp, 1, 5)) = limp1) and (strToInt(copy(lstrTemp, 6, 5)) > limp2)) then
+      if (strToInteger(copy(lstrTemp, 1, 5)) > limp1) or ((strToInteger(copy(lstrTemp, 1, 5)) = limp1) and (strToInteger(copy(lstrTemp, 6, 5)) > limp2)) then
         result := false;
     end
     else
@@ -1264,15 +1264,15 @@ begin
             LslLoad.CommaText := StringReplace(value, '/', ',', [rfReplaceAll]);
 
             if LslLoad.Count > 0 then
-              LwrdDay := self.strToInt(LslLoad[0])
+              LwrdDay := self.strToInteger(LslLoad[0])
             else
               LwrdDay := 0;
             if LslLoad.Count > 1 then
-              LwrdMonth := self.strToInt(LslLoad[1])
+              LwrdMonth := self.strToInteger(LslLoad[1])
             else
               LwrdMonth := 0;
             if LslLoad.Count > 2 then
-              LwrdYear := self.strToInt(LslLoad[2])
+              LwrdYear := self.strToInteger(LslLoad[2])
             else
               LwrdYear := 0;
             if (LwrdDay = 0) or (LwrdMonth = 0) or (LwrdYear = 0) or (LwrdDay > 31) or (LwrdMonth > 12) or (LwrdYear < 1900) then
