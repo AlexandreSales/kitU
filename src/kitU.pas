@@ -5,7 +5,11 @@ interface
 uses
   system.classes,
   system.sysutils,
-  kitU.types;
+  system.json,
+  rest.json,
+  kitU.types,
+  kitU.interfaces,
+  kitU.json;
 
 type
 
@@ -17,6 +21,7 @@ type
     { public declarations }
     class function age(const birthDate: tdate; ageType: tageType = tiyears): integer;
     class function ageString(const birthDate: tdate; ageType: tageType): string;
+    class function arrytoJsonObjectArray<t>(const pArray: tarray<t>; aOptions: tjsonOptions): tjsonObject;
 
     class function bytetoMemoryStream(value: tbytes): tmemoryStream; overload;
 
@@ -38,7 +43,6 @@ type
     class function lastDOW(const value: tdate): tdateTime;
     class function lastDOY(const value: tdate): tdateTime;
 
-
     class function memoryStreamToBase64(const value: tmemorystream): string;
     class function notCharacter(const value: string; ext: boolean): string;
 
@@ -53,12 +57,6 @@ type
     class function strtoMemoryStream(value: string): tmemoryStream; overload;
 
     class function secondsBetween(const pdtStart, pdtEnd: tdateTime): Int64;
-
-    {$ifdef securit_cript_lockbox}
-      class function ssc(strString, strKey: String): String;
-      class function ssd(strString, strKey: String): String;
-    {$endif}
-
 
     class function textFormat(const value: String; tipo: tformatType; IeUF: String = ''): string;
     class function timeintervalToStr(interval: Int64): String;
@@ -701,58 +699,6 @@ begin
                     (ptsTempEnd.Time - ptsTempStart.Time) / 1000);
 end;
 
-{$ifdef securit_cript_lockbox}
-  class function tkitU.ssc(value, key: string): string;
-  var
-    cipher: tlbblowfish;
-  begin
-    cipher := nil;
-
-    try
-      result := '';
-
-      if Trim(value) <> '' then
-      begin
-        cipher := tlbblowfish.create(nil);
-        cipher.generatekey(key);
-
-        result := string(cipher.encryptString(value));
-      end
-      else
-        result := '';
-
-    finally
-      if cipher <> nil then
-        FreeAndNil(cipher);
-    end;
-  end;
-
-  class function tkitU.ssd(value, key: String): String;
-  var
-    cipher: tlbblowfish;
-  begin
-    cipher := nil;
-
-    try
-      result := '';
-
-      if Trim(value) <> '' then
-      begin
-        cipher := tlbblowfish.Create(nil);
-        cipher.generatekey(key);
-
-        result := String(cipher.decryptstring(value));
-      end
-      else
-        result := '';
-
-    finally
-      if cipher <> nil then
-        FreeAndNil(cipher);
-    end;
-  end;
-{$endif}
-
 class function tkitU.strToChars(const value: string; chars: string): string;
 var
   lintCount: Integer;
@@ -879,6 +825,24 @@ begin
   result := lstrResult;
   if result = '' then
     result := '0';
+end;
+
+class function tkitU.arrytoJsonObjectArray<t>(const pArray: tarray<t>; aOptions: tjsonOptions): tjsonObject;
+var
+  ljsonObject: tjsonobject;
+begin
+  ljsonObject := nil;
+  try
+    try
+      ljsonObject := TJson.objecttoJsonObject(tobject(tkitUObjectArray<t>.New(pArray)), aOptions);
+      result := TjsonObject(tjsonObject.parseJSONValue(TEncoding.ASCII.GetBytes(ljsonObject.P['items'].ToJson), 0) as TJSONArray);
+    except
+      raise;
+    end;
+  finally
+    if ljsonObject <> nil then
+      freeandnil(ljsonObject);
+  end;
 end;
 
 class function tkitU.textFormat(const value: String; Tipo: tformatType; IeUF: String): string;
