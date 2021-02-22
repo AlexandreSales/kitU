@@ -16,6 +16,10 @@ type
     function send: ikituMail;
   end;
 
+  ikitUObjectArray<t> = interface
+    ['{51F46471-31AB-43FB-BA21-337328F6A8A2}']
+  end;
+
 implementation
 
 end.
