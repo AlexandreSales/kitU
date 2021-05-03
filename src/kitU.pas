@@ -6,6 +6,7 @@ uses
   system.classes,
   system.sysutils,
   system.json,
+  IdURI,
   rest.json,
   kitU.types,
   kitU.interfaces,
@@ -26,6 +27,7 @@ type
     class function bytetoMemoryStream(value: tbytes): tmemoryStream; overload;
 
     class function gmttoDateTime(const value: string): tdatetime;
+    class function geoRange(coordinateOrin, coordinateDestiny: tgeoCoordinate): double;
 
     class function firstDOM(const value: tdate): tdatetime;
     class function firstDOW(const value: tdate): tdatetime;
@@ -45,6 +47,9 @@ type
 
     class function memoryStreamToBase64(const value: tmemorystream): string;
     class function notCharacter(const value: string; ext: boolean): string;
+
+    class function openURL(const purl: string; const pdisplayError: boolean = false): boolean;
+    class function canOpenURL(const purl: string): boolean;
 
     class function readStr(value: string; offSet: integer): string;
     class function readInt(value: string; offSet: integer): integer;
@@ -71,12 +76,26 @@ type
 implementation
 
 uses
+  system.math,
   system.character,
   system.variants,
   IdCoderMIME,
 
   {$ifdef securit_cript_lockbox}
     LbClass, LbCipher
+  {$endif}
+
+  {$ifdef android}
+    Androidapi.Helpers,
+    FMX.Helpers.Android,
+    Androidapi.JNI.GraphicsContentViewText,
+    Androidapi.JNI.Net, Androidapi.JNI.JavaTypes,
+  {$endif}
+
+  {$ifdef ios}
+    Macapi.Helpers,
+    iOSapi.Foundation,
+    FMX.Helpers.iOS,
   {$endif}
 
   kitU.consts;
@@ -252,7 +271,6 @@ begin
 end;
 
 
-
 class function tkitU.gmttoDateTime(const value: string): tdatetime;
 var
   lstrValue: string;
@@ -283,6 +301,23 @@ begin
     result := strtodatetime(lstrValue);
   except
   end;
+end;
+
+class function tkitU.geoRange(coordinateOrin, coordinateDestiny: tgeoCoordinate): double;
+const
+  diameter = 2 * 6372.8;
+var
+  dx, dy, dz: double;
+begin
+  coordinateOrin.longitude   := degtorad(coordinateOrin.longitude - coordinateDestiny.longitude);
+  coordinateOrin.latitude    := degtorad(coordinateOrin.latitude);
+  coordinateDestiny.latitude := degtorad(coordinateDestiny.latitude);
+
+  dz := sin(coordinateOrin.latitude) - sin(coordinateDestiny.latitude);
+  dx := cos(coordinateOrin.longitude) * cos(coordinateOrin.latitude) - cos(coordinateDestiny.latitude);
+  dy := sin(coordinateOrin.longitude) * cos(coordinateOrin.latitude);
+
+  result := arcsin(sqrt(sqr(dx) + sqr(dy) + sqr(dz)) / 2) * diameter;
 end;
 
 class function tkitU.strtoMemoryStream(value: string): tmemoryStream;
@@ -628,6 +663,56 @@ begin
        lstrText := stringReplace(lstrText, xCarExt[lintCount], '', [rfreplaceall]);
 
    result := lstrText;
+end;
+
+class function tkitU.canOpenURL(const purl: string): boolean;
+begin
+  result := false;
+  {$ifdef ios}
+    var NSU: NSUrl;
+    NSU := StrToNSUrl(TIdURI.URLEncode(purl));
+    result :=  SharedApplication.canOpenURL(NSU);
+  {$endif}
+end;
+
+class function tkitU.openURL(const purl: string; const pdisplayError: boolean = false): boolean;
+begin
+  {$ifdef android}
+    var intent: JIntent;
+    // There may be an issue with the geo: prefix and URLEncode.
+    // will need to research
+    Intent := TJIntent.JavaClass.init(TJIntent.JavaClass.ACTION_VIEW,
+      TJnet_Uri.JavaClass.parse(StringToJString(TIdURI.URLEncode(purl))));
+    try
+      sharedActivity.startActivity(Intent);
+      exit(true);
+    except
+      on e: exception do
+      begin
+        if pdisplayError then
+          raise Exception.Create('Error: Opening "' + pURL + '" not supported.');
+        exit(false);
+      end;
+    end;
+  {$endif}
+
+  {$ifdef ios}
+    var NSU: NSUrl;
+
+    // iOS doesn't like spaces, so URL encode is important.
+    NSU := StrToNSUrl(TIdURI.URLEncode(purl));
+    if SharedApplication.canOpenURL(NSU) then
+      exit(SharedApplication.openUrl(NSU))
+    else
+    begin
+      if pdisplayError then
+        raise Exception.Create('Error: Opening "' + pURL + '" not supported.');
+      exit(false);
+    end;
+  {$endif}
+
+  {$ifdef mswindows}
+  {$endif}
 end;
 
 class function tkitU.readFloat(value: string; offSet: Integer): single;
