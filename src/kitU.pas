@@ -1,7 +1,5 @@
 unit kitU;
-
 interface
-
 uses
   system.classes,
   system.sysutils,
@@ -11,9 +9,7 @@ uses
   kitU.types,
   kitU.interfaces,
   kitU.json;
-
 type
-
   tkitU = class
   private
     { private declaration }
@@ -23,16 +19,12 @@ type
     class function age(const birthDate: tdate; ageType: tageType = tiyears): integer;
     class function ageString(const birthDate: tdate; ageType: tageType): string;
     class function arrytoJsonObjectArray<t>(const pArray: tarray<t>; aOptions: tjsonOptions): tjsonObject;
-
     class function bytetoMemoryStream(value: tbytes): tmemoryStream; overload;
-
     class function gmttoDateTime(const value: string): tdatetime;
     class function geoRange(coordinateOrin, coordinateDestiny: tgeoCoordinate): double;
-
     class function firstDOM(const value: tdate): tdatetime;
     class function firstDOW(const value: tdate): tdatetime;
     class function firstDOY(const value: tdate): tdatetime;
-
     class function iif(const condition: boolean; const trueValue, falseValue: variant): variant;
     class function isDoc(const value: string): boolean;
     class function isDate(const value: String): boolean;
@@ -40,74 +32,57 @@ type
     class function isCelPhone(const value: string): boolean;
     class function isCodPhone(const value: string): boolean;
     class function isCredtCard(const value: string): integer;
-
     class function lastDOM(const value: tdate): tdateTime;
     class function lastDOW(const value: tdate): tdateTime;
     class function lastDOY(const value: tdate): tdateTime;
-
     class function memoryStreamToBase64(const value: tmemorystream): string;
+    class function memoryStreamToString(const value: tmemorystream): string;
     class function notCharacter(const value: string; ext: boolean): string;
-
     class function openURL(const purl: string; const pdisplayError: boolean = false): boolean;
     class function canOpenURL(const purl: string): boolean;
-
     class function readStr(value: string; offSet: integer): string;
     class function readInt(value: string; offSet: integer): integer;
     class function readFloat(value: string; offSet: Integer): single;
-
     class function strtoChars(const value: string; chars: string = '0123456789'): string;
     class function strtoFloat(const value: string): single;
     class function strToInteger(const value: string): integer;
     class function strtoStrNumber(const value: string): string;
     class function strtoMemoryStream(value: string): tmemoryStream; overload;
-
     class function secondsBetween(const pdtStart, pdtEnd: tdateTime): Int64;
-
     class function textFormat(const value: String; tipo: tformatType; IeUF: String = ''): string;
     class function timeintervalToStr(interval: Int64): String;
-
     class function uuId(const onlyNumbers: boolean = false): string;
     class function writeStrings(value: String; offSet: Integer; newValue: string): string;
-
     class procedure base64toMemoryStream(const value: string; var strmResultStream: tmemorystream);
   end;
 
-
 implementation
-
 uses
   system.math,
   system.character,
   system.variants,
   IdCoderMIME,
-
   {$ifdef securit_cript_lockbox}
     LbClass, LbCipher
   {$endif}
-
   {$ifdef android}
     Androidapi.Helpers,
     FMX.Helpers.Android,
     Androidapi.JNI.GraphicsContentViewText,
     Androidapi.JNI.Net, Androidapi.JNI.JavaTypes,
   {$endif}
-
   {$ifdef ios}
     Macapi.Helpers,
     iOSapi.Foundation,
     FMX.Helpers.iOS,
   {$endif}
-
   kitU.consts;
-
 { tkitU }
-
 class function tkitU.age(const birthDate: tdate; ageType: tageType): integer;
 var
   lintYears: integer;
   lintMonths: integer;
   ldtFinalDate: tdate;
-
   function calcSeason(const pintSeason: integer): integer;
   var
     lintCount: integer;
@@ -117,22 +92,17 @@ var
       inc(lintCount);
       ldtFinalDate := IncMonth(ldtFinalDate, pintSeason * -1);
     until ldtFinalDate < birthDate;
-
     ldtFinalDate := IncMonth(ldtFinalDate, pintSeason);
     inc(lintCount, -1);
     result := lintCount;
   end;
-
 begin
   result := 0;
-
   ldtFinalDate := Date;
   if ldtFinalDate <= birthDate then
     exit;
-
   lintYears := calcSeason(12);
   lintMonths := calcSeason(1);
-
   if ageType in [tiyears] then
     result := lintYears
   else
@@ -141,7 +111,6 @@ begin
     else
       result := 0;
 end;
-
 class function tkitU.ageString(const birthDate: tdate; ageType: tageType): string;
 var
   lintYears      : integer;
@@ -149,50 +118,40 @@ var
   lintDays       : integer;
   ldtFinalDate  : tdate;
   lstrResult     : string;
-
   {Retorna a diferença em Dias,Meses e Anos entre 2 datas}
   function calcSeason(const pintSeason: integer): integer;
   var
      lintCount: integer ;
   begin
     lintCount := 0 ;
-
     repeat
       inc(lintCount) ;
       ldtFinalDate := incmonth(ldtFinalDate,pintSeason * -1) ;
     until ldtFinalDate < birthDate ;
-
     ldtFinalDate := incmonth(ldtFinalDate,pintSeason) ;
     inc(lintCount,-1) ;
     result := lintCount ;
   end;
-
 begin
   ldtFinalDate := date;
-
   if ldtFinalDate <= birthDate then
     exit ;
-
   lintYears := calcSeason(12) ;
   lintMonths := calcSeason(1) ;
   lintDays := Round(ldtFinalDate - birthDate) ;
-
   if ageType in [tiResume]  then
   begin
     if lintYears >= 1 then
       lstrResult := inttostr(lintYears) + ' a';
-
     if lintMonths >= 1 then
       lstrResult := inttostr(lintMonths) + ' m';
   end;
-
   if ageType in [tiyears, tiyearsMonth, tiyearsMonthDay, tifull]  then
     if lintYears = 1 then
       lstrResult := inttoStr(lintYears)+' ano'
     else
       if lintYears >= 1 then
         lstrResult := inttoStr(lintYears)+' anos';
-
   if ageType in [tiyearsMonth, tiyearsMonthDay, tifull]  then
     if lstrResult <> nullAsStringValue then
     begin
@@ -210,7 +169,6 @@ begin
         if lintMonths > 1 then
           lstrResult := inttostr(lintMonths) + ' meses';
     end;
-
   if ageType in [tiyearsMonthDay, tifull]  then
     if lstrResult <> nullAsStringValue then
     begin
@@ -227,10 +185,8 @@ begin
         if lintDays > 1 then
           lstrResult := inttostr(lintDays) + ' dias';
     end;
-
   result := lstrResult;
 end;
-
 class function tkitU.firstDOM(const value: TDate): TDateTime;
 var
   lwdYear: word;
@@ -241,11 +197,9 @@ begin
     DecodeDate(now, lwdYear, lwdMonth, lwdDay)
   else
     DecodeDate(value, lwdYear, lwdMonth, lwdDay);
-
   lwdDay := 1;
   Result := (strToDate(intToStr(lwdDay) + '/' + intToStr(lwdMonth) + '/' + intToStr(lwdDay)));
 end;
-
 class function tkitU.firstDOW(const value: TDate): tdateTime;
 var
   dtDate: tdate;
@@ -255,7 +209,6 @@ begin
     dtDate := dtDate - 1;
   result := dtDate;
 end;
-
 class function tkitU.firstDOY(const value: tdate): tdateTime;
 var
   lwdYear: word;
@@ -266,43 +219,35 @@ begin
     decodeDate(now, lwdYear, lwdMonth, lwdDay)
   else
     decodeDate(value, lwdYear, lwdMonth, lwdDay);
-
   result := (strtoDate(inttoStr(1) + '/' + inttoStr(1) + '/' + inttoStr(lwdYear)));
 end;
-
 
 class function tkitU.gmttoDateTime(const value: string): tdatetime;
 var
   lstrValue: string;
 begin
   result := 0;
-
   if value.trim = '' then
     exit;
-
   lstrValue := value;
   lstrValue := stringreplace(lstrValue, ' GMT', '', [rfReplaceAll]);
   lstrValue := stringreplace(lstrValue, 'GMT', '', [rfReplaceAll]);
-
   for var intCount := Low(cDaysOfWeekEn) to High(cDaysOfWeekEn) do
   begin
     lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount] + ', ', '', [rfReplaceAll]);
     lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount] + ' ', '', [rfReplaceAll]);
     lstrValue := stringreplace(lstrValue, cDaysOfWeekEn[intCount], '', [rfReplaceAll]);
   end;
-
   for var intCount := Low(cMonthsOfYearEn) to High(cMonthsOfYearEn) do
   begin
     lstrValue := stringreplace(lstrValue, ' ' + cMonthsOfYearEn[intCount] + ' ', '/' + intCount.ToString + '/', [rfReplaceAll]);
     lstrValue := stringreplace(lstrValue, cMonthsOfYearEn[intCount], '/' + intCount.ToString + '/', [rfReplaceAll]);
   end;
-
   try
     result := strtodatetime(lstrValue);
   except
   end;
 end;
-
 class function tkitU.geoRange(coordinateOrin, coordinateDestiny: tgeoCoordinate): double;
 const
   diameter = 2 * 6372.8;
@@ -312,55 +257,44 @@ begin
   coordinateOrin.longitude   := degtorad(coordinateOrin.longitude - coordinateDestiny.longitude);
   coordinateOrin.latitude    := degtorad(coordinateOrin.latitude);
   coordinateDestiny.latitude := degtorad(coordinateDestiny.latitude);
-
   dz := sin(coordinateOrin.latitude) - sin(coordinateDestiny.latitude);
   dx := cos(coordinateOrin.longitude) * cos(coordinateOrin.latitude) - cos(coordinateDestiny.latitude);
   dy := sin(coordinateOrin.longitude) * cos(coordinateOrin.latitude);
-
   result := arcsin(sqrt(sqr(dx) + sqr(dy) + sqr(dz)) / 2) * diameter;
 end;
-
 class function tkitU.strtoMemoryStream(value: string): tmemoryStream;
 var
   lslloadParametro: tstringList;
 begin
   result := tmemoryStream.create;
-
   lslloadParametro := tstringList.Create;
   lslloadParametro.add(value);
   lslloadParametro.savetostream(result);
-
   if lslloadParametro <> nil then
     FreeAndNil(lslloadParametro);
-
   Result.position := 0;
 end;
-
 class procedure tkitU.base64toMemoryStream(const value: string; var strmResultStream: tmemorystream);
 begin
   if strmResultStream = nil then
     strmResultStream := tmemoryStream.Create
   else
     strmResultStream.Clear;
-
   try
     tiddecodermime.decodeStream(value, strmResultStream);
     strmResultStream.Position := 0;
   finally
   end;
 end;
-
 class function tkitU.bytetoMemoryStream(value: tbytes): tmemoryStream;
 var
   strAux: tbytes;
 begin
   Result := tmemoryStream.Create;
-
   strAux := value;
   result.writeBuffer(pointer(strAux)^, length(strAux));
   result.Position := 0;
 end;
-
 class function tkitU.iif(const condition: boolean; const trueValue, falseValue: variant): variant;
 begin
   if condition then
@@ -368,7 +302,6 @@ begin
   else
     result := falseValue;
 end;
-
 class function tkitU.isCelPhone(const value: string): boolean;
 var
   lstrfoneCheck: string;
@@ -376,17 +309,14 @@ var
 begin
   lintpostCheck := 0;
   lstrfoneCheck := self.strtoChars(value, '0123456789');
-
   case Length(lstrfoneCheck) of
   08: lintpostCheck := 1;
   09: lintpostCheck := 2;
   10: lintpostCheck := 3;
   11: lintpostCheck := 4;
   end;
-
   result := (lintpostCheck > 0) and (self.strToInteger(lstrfoneCheck[lintpostCheck]) in [6..9]);
 end;
-
 class function tkitU.isCodPhone(const value: string): boolean;
 var
   lstrfoneCheck: String;
@@ -394,7 +324,6 @@ var
 begin
   result := False;
   lstrfoneCheck := self.strtoChars(value, '0123456789');
-
   if length(lstrfoneCheck) in [10,11] then
   begin
     lstrfoneCheck := copy(lstrfoneCheck, 1, 2);
@@ -406,7 +335,6 @@ begin
       end;
   end;
 end;
-
 class function tkitU.isDate(const value: String): boolean;
 var
   lbooResult: boolean;
@@ -418,29 +346,23 @@ begin
   except
     lbooResult := false;
   end;
-
   result := lbooResult;
 end;
-
 class function tkitU.isDoc(const value: string): boolean;
 var
   lstrDoc: string;
   ldocType: tdocType;
 begin
   result := false;
-
   lstrDoc := strToChars(value);
   ldocType :=  iif(length(lstrDoc) = 11, dtssn, dtein);
-
   case ldocType of
   dtssn:
     begin
       var intn1, intn2, intn3, intn4, intn5, intn6, intn7, intn8, intn9: Integer;
       var intd1, intd2: Integer;
       var strSender, strCalc: string;
-
       lstrDoc := Copy('0000000000' + lstrDoc, Length('0000000000' + lstrDoc) - 10, 11);
-
       intn1 := strToInteger(lstrDoc[1]);
       intn2 := strToInteger(lstrDoc[2]);
       intn3 := strToInteger(lstrDoc[3]);
@@ -450,22 +372,16 @@ begin
       intn7 := strToInteger(lstrDoc[7]);
       intn8 := strToInteger(lstrDoc[8]);
       intn9 := strToInteger(lstrDoc[9]);
-
       intd1 := intn9 * 2 + intn8 * 3 + intn7 * 4 + intn6 * 5 + intn5 * 6 + intn4 * 7 + intn3 * 8 + intn2 * 9 + intn1 * 10;
       intd1 := 11 - (intd1 mod 11);
-
       if intd1 >= 10 then
         intd1 := 0;
-
       intd2 := intd1 * 2 + intn9 * 3 + intn8 * 4 + intn7 * 5 + intn6 * 6 + intn5 * 7 + intn4 * 8 + intn3 * 9 + intn2 * 10 + intn1 * 11;
       intd2 := 11 - (intd2 mod 11);
-
       if intd2 >= 10 then
         intd2 := 0;
-
       strCalc := IntToStr(intd1) + IntToStr(intd2);
       strSender := lstrDoc[10] + lstrDoc[11];
-
       if strCalc = strSender then
         result := true
       else
@@ -476,9 +392,7 @@ begin
       var intn1, intn2, intn3, intn4, intn5, intn6, intn7, intn8, intn9, intn10, intn11, intn12: Integer;
       var intd1, intd2: Integer;
       var strSender, strCalc: string;
-
       lstrDoc := Copy('00000000000000' + lstrDoc, Length('00000000000000' + lstrDoc) - 13, 14);
-
       intn1 := strToInteger(lstrDoc[1]);
       intn2 := strToInteger(lstrDoc[2]);
       intn3 := strToInteger(lstrDoc[3]);
@@ -491,22 +405,16 @@ begin
       intn10 := strToInteger(lstrDoc[10]);
       intn11 := strToInteger(lstrDoc[11]);
       intn12 := strToInteger(lstrDoc[12]);
-
       intd1 := intn12 * 2 + intn11 * 3 + intn10 * 4 + intn9 * 5 + intn8 * 6 + intn7 * 7 + intn6 * 8 + intn5 * 9 + intn4 * 2 + intn3 * 3 + intn2 * 4 + intn1 * 5;
       intd1 := 11 - (intd1 mod 11);
-
       if intd1 >= 10 then
         intd1 := 0;
-
       intd2 := intd1 * 2 + intn12 * 3 + intn11 * 4 + intn10 * 5 + intn9 * 6 + intn8 * 7 + intn7 * 8 + intn6 * 9 + intn5 * 2 + intn4 * 3 + intn3 * 4 + intn2 * 5 + intn1 * 6;
       intd2 := 11 - (intd2 mod 11);
-
       if intd2 >= 10 then
         intd2 := 0;
-
       strCalc := IntToStr(intd1) + IntToStr(intd2);
       strSender := lstrDoc[13] + lstrDoc[14];
-
       if strCalc = strSender then
         result := True
       else
@@ -514,7 +422,6 @@ begin
     end;
   end;
 end;
-
 class function tkitU.isInArray(const value: string; index: integer; const arrChars: array of char): boolean;
 var
   lchValue: char;
@@ -522,21 +429,17 @@ begin
   lchValue := value[index];
   result := lchValue.IsInArray(arrChars);
 end;
-
 class function tkitU.isMail(const value: string): boolean;
 var
   lintIndex: integer;
   lintCont: integer;
   lstrEmail: string;
-
 const
   caraEsp: array [1 .. 40] of string = ('!', '#', '$', '%', '¨', '&', '*', '(', ')', '+', '=', '§', '¬', '¢', '¹', '²', '³', '£', '´', '`', 'ç', 'Ç', ',', ';', ':', '<', '>', '~', '^', '?', '/', '', '|', '[', ']', '{', '}', 'º', 'ª', '°');
-
 begin
   lstrEmail := value;
   result := true;
   lintCont := 0;
-
   if lstrEmail <> '' then
     if (pos('@', lstrEmail) <> 0) and (pos('.', lstrEmail) <> 0) then // existe @ .
     begin
@@ -574,7 +477,6 @@ begin
     else
       result := false;
 end;
-
 class function tkitU.lastDOM(const value: tdate): tdateTime;
 var
   lwdYear: word;
@@ -585,7 +487,6 @@ begin
     decodedate(now, lwdYear, lwdMonth, lwdDay)
   else
     decodedate(value, lwdYear, lwdMonth, lwdDay);
-
   lwdDay := 1;
   if lwdMonth = 12 then
   begin
@@ -594,10 +495,8 @@ begin
   end
   else
     lwdMonth := lwdMonth + 1;
-
   result := (strtoDate(inttoStr(lwdDay) + '/' + inttoStr(lwdMonth) + '/' + inttoStr(lwdYear)) - 1);
 end;
-
 class function tkitU.lastDOW(const value: tdate): tdateTime;
 var
   ldtValue: tdate;
@@ -607,7 +506,6 @@ begin
     ldtValue := ldtValue + 1;
   result := ldtValue;
 end;
-
 class function tkitU.lastDOY(const value: tdate): tdateTime;
 var
   ldwYear: word;
@@ -618,16 +516,22 @@ begin
     decodeDate(now, ldwYear, lwdMonth, lwdDay)
   else
     decodeDate(value, ldwYear, lwdMonth, lwdDay);
-
   result := (strtoDate(inttoStr(31) + '/' + inttoStr(12) + '/' + inttoStr(ldwYear)));
 end;
-
 class function tkitU.memoryStreamToBase64(const value: tmemorystream): string;
 begin
   try
     value.position := 0;
     result := TIdEncoderMIME.EncodeStream(value);
   finally
+  end;
+end;
+class function tkitU.memoryStreamToString(const value: tmemorystream): string;
+begin
+  if value <> nil then
+  begin
+    value.position := 0;
+    setString(result, pansiChar(value.memory), value.size);
   end;
 end;
 
@@ -656,15 +560,12 @@ begin
    lstrText := value;
    for lintCount:=1 to 38 do
      lstrText := stringReplace(lstrText, xCarEsp[lintCount], xCarTro[lintCount], [rfreplaceall]);
-
    //De acordo com o parâmetro aLimExt, elimina caracteres extras.
    if (ext) then
      for lintCount:=1 to 49 do
        lstrText := stringReplace(lstrText, xCarExt[lintCount], '', [rfreplaceall]);
-
    result := lstrText;
 end;
-
 class function tkitU.canOpenURL(const purl: string): boolean;
 begin
   result := false;
@@ -674,7 +575,6 @@ begin
     result :=  SharedApplication.canOpenURL(NSU);
   {$endif}
 end;
-
 class function tkitU.openURL(const purl: string; const pdisplayError: boolean = false): boolean;
 begin
   {$ifdef android}
@@ -695,10 +595,8 @@ begin
       end;
     end;
   {$endif}
-
   {$ifdef ios}
     var NSU: NSUrl;
-
     // iOS doesn't like spaces, so URL encode is important.
     NSU := StrToNSUrl(TIdURI.URLEncode(purl));
     if SharedApplication.canOpenURL(NSU) then
@@ -710,11 +608,9 @@ begin
       exit(false);
     end;
   {$endif}
-
   {$ifdef mswindows}
   {$endif}
 end;
-
 class function tkitU.readFloat(value: string; offSet: Integer): single;
 var
   lslValue: tstringList;
@@ -723,7 +619,6 @@ begin
   try
     lslValue := tstringList.create;
     lslValue.commaText := value;
-
     if offSet > lslValue.count - 1 then
       result := 0
     else
@@ -733,7 +628,6 @@ begin
       freeandnil(lslValue);
   end;
 end;
-
 class function tkitU.readInt(value: string; offSet: integer): integer;
 var
   lslValue: tstringList;
@@ -742,7 +636,6 @@ begin
   try
     lslValue := tstringList.create;
     lslValue.commaText := value;
-
     if offSet > lslValue.count - 1 then
       result := 0
     else
@@ -752,7 +645,6 @@ begin
       freeandnil(lslValue);
   end;
 end;
-
 class function tkitU.readStr(value: string; offSet: integer): string;
 var
   lslValue: tstringList;
@@ -761,7 +653,6 @@ begin
   try
     lslValue := tstringList.create;
     lslValue.commaText := value;
-
     if offSet > lslValue.count - 1 then
       result := ''
     else
@@ -771,7 +662,6 @@ begin
       freeandnil(lslValue);
   end;
 end;
-
 class function tkitU.secondsBetween(const pdtStart, pdtEnd: tdateTime): Int64;
 var
   ptsTempStart: ttimeStamp;
@@ -779,11 +669,9 @@ var
 begin
   ptsTempStart := datetimeToTimeStamp(pDtStart);
   ptsTempEnd   := datetimeToTimeStamp(pdtEnd);
-
   result := Trunc((((((ptsTempEnd.Date - ptsTempStart.Date) * 24) * 60) * 60) * 100) +
                     (ptsTempEnd.Time - ptsTempStart.Time) / 1000);
 end;
-
 class function tkitU.strToChars(const value: string; chars: string): string;
 var
   lintCount: Integer;
@@ -793,7 +681,6 @@ begin
     if Pos(value[lintCount], Chars) > 0 then
       result := result + value[lintCount];
 end;
-
 class function tkitU.strToFloat(const value: string): single;
 var
   lintCount: integer;
@@ -803,7 +690,6 @@ var
 begin
   lbooComma := false;
   lbooNegative := false;
-
   for lintCount := low(value) to high(value) do
   begin
     if self.isInArray(value, lintCount, ccharFloat) or (value[lintCount] = formatSettings.decimalSeparator)  then
@@ -817,7 +703,6 @@ begin
             lbooComma := true;
         end;
   end;
-
   if lstrResult = '' then
     result := 0
   else
@@ -826,9 +711,7 @@ begin
     else
       result := system.sysutils.strToFloat(lstrResult);
 end;
-
 class function tkitU.strToInteger(const value: string): integer;
-
   function idInteger(value: string): boolean;
   var
     lstrTemp: string;
@@ -843,16 +726,13 @@ class function tkitU.strToInteger(const value: string): integer;
     begin
       result := true;
       lbooNegative := false;
-
       if value[1] = '-' then
         lbooNegative := true;
-
       limp1 := 21474;
       if lbooNegative then
         limp2 := 83648
       else
         limp2 := 83647;
-
       lstrTemp := copy(lstrTemp, 1, 10);
       if (strToInteger(copy(lstrTemp, 1, 5)) > limp1) or ((strToInteger(copy(lstrTemp, 1, 5)) = limp1) and (strToInteger(copy(lstrTemp, 6, 5)) > limp2)) then
         result := false;
@@ -863,17 +743,14 @@ class function tkitU.strToInteger(const value: string): integer;
       else
         result := true;
   end;
-
 var
   lintCount: integer;
   lstText: string;
   lstrResult: string;
   lbooNegative: boolean;
-
 begin
   lstText := value;
   lbooNegative := true;
-
   for lintCount := low(lstText) to High(lstText) do
   begin
     if isInArray(lstText, lintCount, cCharInteger) or (isInArray(lstText, lintCount, ['-']) and lbooNegative) then
@@ -882,7 +759,6 @@ begin
       lbooNegative := False;
     end;
   end;
-
   if (lstrResult = '') or (lstrResult = '-') or (not idInteger(lstrResult)) then
     result := 0
   else
@@ -893,7 +769,6 @@ begin
       result := 0;
   end;
 end;
-
 class function tkitU.strToStrNumber(const value: string): string;
 var
  lintCount: integer;
@@ -901,17 +776,14 @@ var
  lstrResult: string;
 begin
   result := '';
-
   lstrText := value;
   for lintCount := 1 to length(lstrText) do
     if isInArray(lstrText, lintCount, cCharFloat) then
       lstrResult := lstrResult + lstrText[lintCount];
-
   result := lstrResult;
   if result = '' then
     result := '0';
 end;
-
 class function tkitU.arrytoJsonObjectArray<t>(const pArray: tarray<t>; aOptions: tjsonOptions): tjsonObject;
 var
   ljsonObject: tjsonobject;
@@ -929,7 +801,6 @@ begin
       freeandnil(ljsonObject);
   end;
 end;
-
 class function tkitU.textFormat(const value: String; Tipo: tformatType; IeUF: String): string;
 var
   lstrLoad: String;
@@ -943,17 +814,14 @@ var
   LwrdYearInc: Word;
   LslLoad: TStringList;
   LDate: TDate;
-
   function IEmask(AValue : String; UF : String) : String;
   var
    LenDoc : Integer;
    mask : String;
-
   begin
     UF      := UpperCase( UF ) ;
     LenDoc  := Length( AValue ) ;
     mask := StringOfChar('*', LenDoc) ;
-
     IF UF = 'AC' Then mask := '**.***.***/***-**';
     IF UF = 'AL' Then mask := '*********';
     IF UF = 'AP' Then mask := '*********';
@@ -981,10 +849,8 @@ var
     IF UF = 'SP' Then mask := Iif((LenDoc>1) and (AValue[1]='P'),'*-********.*/***', '***.***.***.***');
     IF UF = 'SE' Then mask := '**.***.***-*';
     IF UF = 'TO' Then mask := Iif((LenDoc=11),'**.**.******-*','**.***.***-*');
-
     Result := mask;
   end;
-
   function numericMask(ANumValue, mask: String): String;
   var
     LenMas, LenDoc: Integer;
@@ -995,30 +861,24 @@ var
     ANumValue := Trim( ANumValue );
     LenMas := Length( mask ) ;
     LenDoc := Length( ANumValue );
-
     J := LenMas ;
     For I := LenMas downto 1 do
     begin
       C := mask[I] ;
-
       if C = '*' then
       begin
         if J <= ( LenMas - LenDoc ) then
           C := '0'
         else
           C := ANumValue[( J - ( LenMas - LenDoc ) )] ;
-
         Dec( J ) ;
       end;
-
       Result := C + Result;
     end;
   end;
-
 begin
   LslLoad := nil;
   Result := '';
-
   try
     try
       case Tipo of
@@ -1103,7 +963,6 @@ begin
                 Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,3) + '-' + copy(lstrResult,10,1) else
             if Length(lstrResult)= 11 then
                 Result := copy(lstrResult,1,3) + '.' + copy(lstrResult,4,3) + '.' + copy(lstrResult,7,3) + '-' + copy(lstrResult,10,2) else
-
             Result := lstrResult;
           except
             result := '';
@@ -1166,7 +1025,6 @@ begin
             for lintCount := Low(value) to High(value) do
               if isInArray(value, lintCount, cCharInteger) then
                 lstrResult := lstrResult + value[lintCount];
-
             if Length(lstrResult)= 5 then
               Result := copy(lstrResult,1,4) + ' ' + copy(lstrResult,5,1) else
             if Length(lstrResult)= 6 then
@@ -1196,7 +1054,6 @@ begin
             result := '';
           end;
         end;
-
         tfcep:
         begin
           try
@@ -1204,7 +1061,6 @@ begin
             for lintCount := Low(value) to High(value) do
               if isInArray(value, lintCount, cCharInteger) then
                 lstrResult := lstrResult + value[lintCount];
-
             if Length(lstrResult)= 5 then
               Result := copy(lstrResult,1,2)+'.'+copy(lstrResult,3,3) else
             if Length(lstrResult)= 6 then
@@ -1220,17 +1076,14 @@ begin
             Result := '';
           end;
         end;
-
         tfPostCode:
           begin
             if value = '0' then
               Exit;
-
             lstrLoad := '';
             for lintCount := Low(value) to High(value) do
               if isInArray(value, lintCount, cCharInteger) then
                 lstrLoad := lstrLoad + value[lintCount];
-
             if Length(lstrLoad) = 5 then
               Result := Copy(lstrLoad, 1, 2) + '.' + Copy(lstrLoad, 3, 3)
             else if Length(lstrLoad) = 6 then
@@ -1248,32 +1101,25 @@ begin
           begin
             Result := '';
             lstrLoad := value;
-
             if not(self.strToFloat(lstrLoad) > 0) then
               Exit;
-
             for lintCount := Low(lstrLoad) to High(lstrLoad) do
               if isInArray(lstrLoad, lintCount, cCharInteger) then
                 lstrResult := lstrResult + lstrLoad[lintCount];
-
             //while Length(lstrResult) < 11 do
               //lstrResult := '0' + lstrResult;
-
            if isDoc(lstrResult) then
             begin
               Result := Copy(lstrResult, 1, 3) + '.' + Copy(lstrResult, 4, 3) + '.' + Copy(lstrResult, 7, 3) + '-' + Copy(lstrResult, 10, 2);
               Exit;
             end;
-
             //while Length(lstrResult) < 14 do
               //lstrResult := '0' + lstrResult;
-
             if isDoc(lstrResult) then
             begin
               Result := Copy(lstrResult, 1, 2) + '.' + Copy(lstrResult, 3, 3) + '.' + Copy(lstrResult, 6, 3) + '/' + Copy(lstrResult, 9, 4) + '-' + Copy(lstrResult, 13, 2);
               Exit;
             end;
-
             Result := lstrResult;
           end;
         tfFoneNumber:
@@ -1283,12 +1129,10 @@ begin
               Result := value;
               Exit;
             end;
-
             lstrLoad := '';
             for lintCount := Low(value) to High(value) do
               if isInArray(value, lintCount, cCharInteger) then
                 lstrLoad := lstrLoad + value[lintCount];
-
             if Length(lstrLoad) = 7 then
               Result := Copy(lstrLoad, 1, 3) + '-' + Copy(lstrLoad, 4, 4)
             else if Length(lstrLoad) = 8 then
@@ -1311,7 +1155,6 @@ begin
           begin
             LslLoad := TStringList.Create;
             LslLoad.CommaText := StringReplace(value, '/', ',', [rfReplaceAll]);
-
             if LslLoad.Count > 0 then
               LwrdDay := self.strToInteger(LslLoad[0])
             else
@@ -1342,21 +1185,16 @@ begin
         tfAge:
           begin
             LDate := StrToDate(value);
-
             if (LDate >= Date) or (LDate < IncMonth(Date, -1800)) then
               Exit;
-
             DecodeDate(LDate, LwrdYear, LwrdMonth, LwrdDay);
             DecodeDate(Date, LwrdYearInc, LwrdMonthInc, LwrdDayInc);
-
             LwrdMonth := LwrdMonth + LwrdYear * 12;
             LwrdMonthInc := LwrdMonthInc + LwrdYearInc * 12;
             LwrdYear := (LwrdMonthInc - LwrdMonth) div 12;
             LwrdMonth := (LwrdMonthInc - LwrdMonth) - 12 * LwrdYear;
-
             lstrLoad := IntToStr(LwrdYear) + ' anos';
             lstrLoad := lstrLoad + ', ' + IntToStr(LwrdMonth) + ' meses';
-
             Result := lstrLoad;
           end;
           tfIE:
@@ -1370,7 +1208,6 @@ begin
       FreeAndNil(LslLoad);
   end;
 end;
-
 class function tkitU.timeintervalToStr(interval: Int64): String;
 var
   lwdCount: word;
@@ -1378,33 +1215,28 @@ var
   lbooStart: boolean;
   lint64Values: array[1..6] of Int64;
 const
-  descs: array[1..6] of string=('Mês',' Semana','Dia','Hora','Minuto','Segundo');
-
+  descs: array[1..6] of string=('Mês',' Semana','Dia','h','min','seg');
 begin
    result:='';
-
    lint64Values[1] :=trunc(interval/(31 * 24 * 3600));
    interval := interval - (lint64Values[1] * (31 * 24 * 3600));
-
    lint64Values[2] := trunc(interval/(7 * 24 * 3600));
    interval := interval - (lint64Values[2] * (7 * 24 * 3600));
-
    lint64Values[3] := trunc(interval/(24 * 3600));
    interval := interval - (lint64Values[3] * (24 * 3600));
-
    lint64Values[4] := trunc(interval/3600);
    interval := interval - (lint64Values[4] * 3600);
-
    lint64Values[5] := trunc(interval/60);
    interval := interval - (lint64Values[5] * 60);
-
    lint64Values[6]:= interval;
    lbooStart := false;
 
    for lwdCount := 1 to high(lint64Values) do
    begin
+      if not(lint64Values[lwdCount] > 0) then
+        continue;
 
-      if (lint64Values[lwdCount] <> 1) then
+      if (lint64Values[lwdCount] <> 1) and (lwdCount in [1, 2, 3]) then
          lstrDesc := descs[lwdCount] + 's'
       else
          lstrDesc := descs[lwdCount];
@@ -1419,19 +1251,20 @@ begin
       else
          result := result + inttoStr(lint64Values[lwdCount]) + ' ' + lstrDesc;
    end;
-end;
 
+  result := result.trim;
+  if result[high(result)] = ',' then
+    result := copy(result, 1, high(result) - 1);
+end;
 class function tkitU.uuId(const onlyNumbers: boolean): string;
 var
   lgidID: TGuid;
   lgidIDResult  : HResult;
 begin
   lgidIDResult := CreateGuid(lgidID);
-
   if lgidIDResult = S_OK then
   begin
     result := guidtoString(lgidID);
-
     if onlyNumbers then
     begin
       result := stringreplace(result, '{', '', [rfReplaceAll]);
@@ -1439,7 +1272,6 @@ begin
     end;
   end;
 end;
-
 class function tkitU.isCredtCard(const value: string): integer;
 var
   xCartao: string[21];
@@ -1451,15 +1283,12 @@ begin
   Cstr := '';
   FillChar(VetCartao, 22, #0);
   xCartao := value;
-
   for x := 1 to 20 do
   if (VetCartao[x] in [48..57]) then
     Cstr := Cstr + chr(VetCartao[x]);
-
   xCartao := '';
   xCartao := Cstr;
   kCartao := 0;
-
   if not odd(Length(xCartao)) then
     for x := (Length(xCartao) - 1) downto 1 do
     begin
@@ -1469,9 +1298,7 @@ begin
         y := (VetCartao[x] - 48);
       if (y >= 10) then
         y := ((y - 10) + 1);
-
       kCartao := (kCartao + y)
-
     end
   else
   for x := (Length(xCartao) - 1) downto 1 do
@@ -1482,22 +1309,16 @@ begin
       y := ((VetCartao[x] - 48) * 2);
     if (y >= 10) then
       y := ((y - 10) + 1);
-
     kCartao := (kCartao + y)
   end;
-
   x := (10 - (kCartao mod 10));
-
   if (x = 10) then
-
   x := 0;
-
   if (x = (VetCartao[Length(xCartao)] - 48)) then
     Result := Ord(Cstr[1]) - Ord('2')
   else
     Result := 0
 end;
-
 class function tkitU.writeStrings(value: String; offSet: Integer; newValue: string): string;
 var
   lslValue: tstringList;
@@ -1505,26 +1326,21 @@ var
 begin
   result := '';
   lslValue := nil;
-
   try
     lslValue := TStringList.Create;
     lslValue.CommaText := value;
-
     for lintCount := 0 to lslValue.Count - 1 do
     begin
       if lintCount > 0 then
         result := result + ',';
-
       if lintCount = offSet then
         result := result + '"' + newValue + '"'
       else
         result := result + '"' + lslValue[lintCount] + '"';
     end;
-
   finally
     if lslValue <> nil then
       freeandnil(lslValue);
   end;
 end;
-
 end.
